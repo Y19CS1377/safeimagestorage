@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: safe-image-storage
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DB_TYPE
+        value: postgresql
+      - key: DB_HOST
+        fromDatabase:
+          name: safe-image-storage-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: safe-image-storage-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: safe-image-storage-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: safe-image-storage-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: safe-image-storage-db
+          property: password
+
+databases:
+  - name: safe-image-storage-db
+    databaseName: safe_image_storage
+    user: safe_image_storage
+    plan: free

@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.Column;
 
 @Entity
 
@@ -19,7 +19,7 @@ public class Files {
     private String name;
     private String type;
 
-    @Lob
+	@Column(length = 10485760)
     private byte[] imageData;
     
     public Files() {
