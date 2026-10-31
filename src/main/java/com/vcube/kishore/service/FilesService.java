@@ -26,8 +26,8 @@ public class FilesService {
                 .orElseThrow(() -> new RuntimeException("File not found"));
     }
 
-    public Files getFileOptional(Long id) {
-        return filesRepository.findById(id).get();
+    public Optional<Files> getFileOptional(Long id) {
+        return filesRepository.findById(id);
     }
 
     @Transactional

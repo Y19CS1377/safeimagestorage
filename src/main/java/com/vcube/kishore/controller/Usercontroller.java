@@ -2,7 +2,17 @@ package com.vcube.kishore.controller;
 
 
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -38,14 +48,15 @@ public class Usercontroller {
 	@Autowired
 	private FilesService fs;
 
-	@GetMapping("/")
+	@GetMapping({"/", "/login"})
 	public String getLoginPage() {
 		return "login";
 	}
 
 	@GetMapping("/getregisterpage")
-	public String getregisterpage() {
-		return "register.html";
+	public String getregisterpage(Model model) {
+		model.addAttribute("user", new User());
+		return "register";
 	}
 
 	@PostMapping("/checkloginuser")
@@ -62,13 +73,28 @@ public class Usercontroller {
 	}
 
 	@PostMapping("/saveUser")
-	public String SaveUser(@ModelAttribute User user) {
-		try {
-			service.saveUserdetails(user);
-			return "redirect:/";
-		} catch (Exception e) {
-			return "redirect:/getregisterpage";
+	public String SaveUser(@ModelAttribute User user, Model model) {
+		Map<String, String> validationErrors = new LinkedHashMap<>();
+		if (user.getName() == null || user.getName().isBlank()) {
+			validationErrors.put("nameError", "Full name is required.");
 		}
+		if (user.getUsername() == null || user.getUsername().isBlank()) {
+			validationErrors.put("usernameError", "Username is required.");
+		}
+		if (user.getPassword() == null || user.getPassword().isBlank()) {
+			validationErrors.put("passwordError", "Password is required.");
+		}
+		if (user.getPhoneNumber() == null || user.getPhoneNumber().isBlank()) {
+			validationErrors.put("phoneNumberError", "Phone number is required.");
+		}
+
+		if (!validationErrors.isEmpty()) {
+			model.addAllAttributes(validationErrors);
+			return "register";
+		}
+
+		service.saveUserdetails(user);
+		return "redirect:/";
 	}
 
 	@GetMapping("/getuserhome")
@@ -108,10 +134,73 @@ public class Usercontroller {
 	    return "redirect:/Profile";
 	}
 	
-	@GetMapping("/images/{id}")
-	public ResponseEntity<Files> getImage(@PathVariable Long id) {
-	     Files img = fs.getFileOptional(id);
-	    return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(img);
+	@GetMapping("/file-images/{id}")
+	public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+		Optional<Files> optionalFile = fs.getFileOptional(id);
+		if (optionalFile.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		Files file = optionalFile.get();
+		byte[] imageData = file.getImageData();
+		if (imageData == null || imageData.length == 0) {
+			return ResponseEntity.notFound().build();
+		}
+
+		MediaType mediaType = getImageMediaType(file.getType(), imageData);
+		if (mediaType == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		return ResponseEntity.ok()
+				.contentType(mediaType)
+				.header("X-Content-Type-Options", "nosniff")
+				.body(imageData);
+	}
+
+	private MediaType getImageMediaType(String storedType, byte[] imageData) {
+		if (storedType != null && !storedType.isBlank()) {
+			try {
+				MediaType mediaType = MediaType.parseMediaType(storedType.trim());
+				if ("image".equalsIgnoreCase(mediaType.getType()) && !"*".equals(mediaType.getSubtype())) {
+					return mediaType;
+				}
+			} catch (IllegalArgumentException ignored) {
+				// Older uploads may have stored the generic value "image".
+			}
+		}
+
+		return detectImageMediaType(imageData);
+	}
+
+	private MediaType detectImageMediaType(byte[] imageData) {
+		try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(imageData))) {
+			if (input == null) {
+				return null;
+			}
+
+			Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+			if (!readers.hasNext()) {
+				return null;
+			}
+
+			ImageReader reader = readers.next();
+			try {
+				reader.setInput(input, true, true);
+				return switch (reader.getFormatName().toLowerCase(Locale.ROOT)) {
+					case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
+					case "png" -> MediaType.IMAGE_PNG;
+					case "gif" -> MediaType.IMAGE_GIF;
+					case "bmp" -> MediaType.parseMediaType("image/bmp");
+					case "wbmp" -> MediaType.parseMediaType("image/vnd.wap.wbmp");
+					default -> null;
+				};
+			} finally {
+				reader.dispose();
+			}
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 

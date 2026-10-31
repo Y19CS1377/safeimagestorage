@@ -54,7 +54,6 @@ public class FilesController {
     
     @PostMapping("/uploadfile")
     public String uploadFile(@RequestParam("name") String name,
-                             @RequestParam("type") String type,
                              @RequestParam("imageData") MultipartFile file) {
 
         User user = (User) session.getAttribute("User");
@@ -65,7 +64,7 @@ public class FilesController {
         try {
             Files newFile = new Files();
             newFile.setName(name);
-            newFile.setType(type);
+            newFile.setType(file.getContentType());
             newFile.setImageData(file.getBytes());
    
             Optional<User> byId = userrepo.findById(user.getId());
