@@ -11,7 +11,7 @@
 <body class="app-page">
 
     <!-- Navigation Bar -->
-    <div th:replace="~{UserNavbar.html :: usernav}"></div>
+    <div th:replace="~{UserNavbar.html :: usernav('files')}"></div>
     
     
     <main class="app-main">
@@ -47,17 +47,17 @@
                 <tbody>
                     <tr th:each="file : ${files}">
                         <td>
-                            <i th:class="${file.type.startsWith('image/') ? 'fas fa-image' : 
-                                        file.type.startsWith('application/pdf') ? 'fas fa-file-pdf' :
-                                        file.type.startsWith('application/msword') ? 'fas fa-file-word' :
-                                        file.type.startsWith('application/vnd.ms-excel') ? 'fas fa-file-excel' :
+                            <i th:class="${file.type != null and file.type.toLowerCase().startsWith('image') ? 'fas fa-image' :
+                                        file.type != null and file.type.startsWith('application/pdf') ? 'fas fa-file-pdf' :
+                                        file.type != null and file.type.startsWith('application/msword') ? 'fas fa-file-word' :
+                                        file.type != null and file.type.startsWith('application/vnd.ms-excel') ? 'fas fa-file-excel' :
                                         'fas fa-file-alt'}"></i>
                             <span th:text="${file.name}"></span>
                         </td>
                         <td th:text="${file.type}"></td>
                         <td>
-                            <button th:if="${file.type != null and file.type.startsWith('image')}"
-                                class="btn btn-info btn-sm" onclick="showPreview(this)" th:data-url="@{'/images/' + ${file.id}}">
+                            <button th:if="${file.type != null and file.type.toLowerCase().startsWith('image')}"
+                                class="btn btn-info btn-sm" onclick="showPreview(this)" th:data-url="@{'/file-images/' + ${file.id}}">
                                 <i class="fas fa-eye"></i> Preview
                             </button>
                             <span th:unless="${file.type != null and file.type.startsWith('image')}">N/A</span>
@@ -91,6 +91,9 @@
                 </div>
                 <div class="modal-body text-center">
                     <img id="previewImage" src="" class="img-fluid rounded" alt="File Preview">
+                    <p id="previewError" class="alert alert-warning mt-3 d-none" role="alert">
+                        This file could not be previewed. Try downloading it instead.
+                    </p>
                 </div>
             </div>
         </div>
@@ -98,8 +101,15 @@
 
     <script>
         function showPreview(button) {
-            let imageUrl = button.getAttribute('data-url');
-            document.getElementById('previewImage').src = imageUrl;
+            const previewImage = document.getElementById('previewImage');
+            const previewError = document.getElementById('previewError');
+            previewError.classList.add('d-none');
+            previewImage.classList.remove('d-none');
+            previewImage.onerror = function() {
+                previewImage.classList.add('d-none');
+                previewError.classList.remove('d-none');
+            };
+            previewImage.src = button.getAttribute('data-url');
             let previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
             previewModal.show();
         }

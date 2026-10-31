@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-    <header th:fragment="usernav">
+    <header th:fragment="usernav(activePage)">
         <nav class="navbar navbar-custom">
             <div class="container-fluid d-flex justify-content-between align-items-center">
                 <a class="navbar-brand" th:href="@{/home}">
                     <i class="fas fa-cloud" aria-hidden="true"></i> Safe Image Storage
                 </a>
                 <div class="d-flex align-items-center app-nav-links">
-                    <a th:href="@{/home}" class="nav-link"><i class="fas fa-home" aria-hidden="true"></i> Home</a>
-                    <a th:href="@{/getallfiles}" class="nav-link"><i class="fas fa-images" aria-hidden="true"></i> My Files</a>
-                    <a th:href="@{/getaddfilepage}" class="nav-link"><i class="fas fa-plus-circle" aria-hidden="true"></i> Upload</a>
-                    <a th:href="@{/profilepage}" class="nav-link"><i class="fas fa-user" aria-hidden="true"></i> Profile</a>
+                    <a th:href="@{/home}" class="nav-link" th:classappend="${activePage == 'home'} ? ' active' : ''" th:attr="aria-current=${activePage == 'home'} ? 'page' : null"><i class="fas fa-home" aria-hidden="true"></i> Home</a>
+                    <a th:href="@{/getallfiles}" class="nav-link" th:classappend="${activePage == 'files'} ? ' active' : ''" th:attr="aria-current=${activePage == 'files'} ? 'page' : null"><i class="fas fa-images" aria-hidden="true"></i> My Files</a>
+                    <a th:href="@{/getaddfilepage}" class="nav-link" th:classappend="${activePage == 'upload'} ? ' active' : ''" th:attr="aria-current=${activePage == 'upload'} ? 'page' : null"><i class="fas fa-plus-circle" aria-hidden="true"></i> Upload</a>
+                    <a th:href="@{/profilepage}" class="nav-link" th:classappend="${activePage == 'profile'} ? ' active' : ''" th:attr="aria-current=${activePage == 'profile'} ? 'page' : null"><i class="fas fa-user" aria-hidden="true"></i> Profile</a>
                     <a href="#" class="nav-link nav-logout" onclick="confirmLogout(); return false;">
                         <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                     </a>

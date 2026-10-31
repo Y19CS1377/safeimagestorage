@@ -85,9 +85,20 @@
 	transform: translateY(-1px);
 }
 
-.app-page .navbar-custom .nav-logout {
-	background: #f2f5ff;
+.app-page .navbar-custom .nav-link.active {
+	background: #e9edff;
 	color: var(--app-blue);
+	font-weight: 700;
+}
+
+.app-page .navbar-custom .nav-logout {
+	background: #fff1f0;
+	color: #b42318;
+}
+
+.app-page .navbar-custom .nav-link.nav-logout:hover {
+	background: #ffe4e1;
+	color: #912018;
 }
 
 .app-page .app-main {

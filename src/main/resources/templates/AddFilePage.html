@@ -11,7 +11,7 @@
 <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body class="app-page">
-	<div th:replace="~{UserNavbar.html :: usernav}"></div>
+	<div th:replace="~{UserNavbar.html :: usernav('upload')}"></div>
 	<main class="app-main">
 		<div class="page-heading">
 			<span class="page-eyebrow">GROW YOUR COLLECTION</span>
@@ -23,10 +23,6 @@
 				<div class="mb-3">
 					<label for="name" class="form-label">File name</label>
 					<input type="text" class="form-control" name="name" id="name" placeholder="Give your file a name">
-				</div>
-				<div class="mb-3">
-					<label for="type" class="form-label">File type</label>
-					<input type="text" class="form-control" name="type" id="type" placeholder="For example, image/jpeg or application/pdf">
 				</div>
 				<div class="mb-4">
 					<label for="image" class="form-label">Choose a file</label>
