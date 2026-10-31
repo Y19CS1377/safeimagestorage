@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>My Files</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="USernavbar.css" th:href="@{/css/USernavbar.css}"/>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <div th:replace="~{UserNavbar.html :: usernav}"></div>
+    
+    
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">📂 My Uploaded Files</h1>
+
+        <!-- Upload Button -->
+        <div class="text-end mb-3">
+            <a href="/getaddfilepage" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload New File
+            </a>
+        </div>
+
+        <!-- No Images Message (Only Show If No Images Exist) -->
+        <div th:if="${files == null or #lists.isEmpty(files)}" class="alert alert-warning text-center">
+    No files available in your account.
+</div>
+
+
+        <!-- Files Table -->
+        <div th:unless="${files.isEmpty()}">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Preview</th>
+                        <th>Download</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="file : ${files}">
+                        <td>
+                            <i th:class="${file.type.startsWith('image/') ? 'fas fa-image' : 
+                                        file.type.startsWith('application/pdf') ? 'fas fa-file-pdf' :
+                                        file.type.startsWith('application/msword') ? 'fas fa-file-word' :
+                                        file.type.startsWith('application/vnd.ms-excel') ? 'fas fa-file-excel' :
+                                        'fas fa-file-alt'}"></i>
+                            <span th:text="${file.name}"></span>
+                        </td>
+                        <td th:text="${file.type}"></td>
+                        <td>
+                            <button th:if="${file.type != null and file.type.startsWith('image')}"
+                                class="btn btn-info btn-sm" onclick="showPreview(this)" th:data-url="@{'/images/' + ${file.id}}">
+                                <i class="fas fa-eye"></i> Preview
+                            </button>
+                            <span th:unless="${file.type != null and file.type.startsWith('image')}">N/A</span>
+                        </td>
+                        <td>
+                            <a th:href="@{'/download/' + ${file.id}}" class="btn btn-success btn-sm" download>
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </td>
+                        <td>
+                            <form th:action="@{'/delete/' + ${file.id}}" method="get"
+                                onsubmit="return confirm('Are you sure you want to delete this file?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Image Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="previewImage" src="" class="img-fluid rounded" alt="File Preview">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showPreview(button) {
+            let imageUrl = button.getAttribute('data-url');
+            document.getElementById('previewImage').src = imageUrl;
+            let previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            previewModal.show();
+        }
+    </script>
+</body>
+
+</html> 

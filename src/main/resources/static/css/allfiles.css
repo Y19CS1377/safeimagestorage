@@ -1,0 +1,72 @@
+/* Body Styling */
+body {
+    background: linear-gradient(to right, #f8f9fa, #dee2e6);
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Centered Content Box */
+.content {
+    max-width: 900px;
+    margin: auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Table Styling */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    background: #343a40 !important;
+    color: white !important;
+    text-align: center;
+}
+
+.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* File Preview */
+.file-preview {
+    max-width: 80px;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Styling */
+.btn-primary {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-danger:hover {
+    filter: brightness(1.1);
+}
